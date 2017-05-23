@@ -1,0 +1,35 @@
+{
+    "description": "schema for logical statements",
+    "$ref": "#/definitions/BooleanOperator",
+    "definitions": {
+        "BooleanOperator": {
+            "type": "object",
+            "anyOf": [
+                { "$ref": "#/definitions/LogicalOperator" },
+                { "$ref": "#/definitions/ComparisonOperator" }
+            ]
+        },
+        "LogicalOperator": {
+            "type": "object",
+            "properties": {
+                "operator": {
+                    "type": "string",
+                    "enum": ["and", "or"]
+                },
+                "left": { "$ref": "#/definitions/BooleanOperator" },
+                "right": { "$ref": "#/definitions/BooleanOperator" }
+            }
+        },
+        "ComparisonOperator": {
+            "type": "object",
+            "properties": {
+                "operator": {
+                    "type": "string",
+                    "enum": ["eq", "ne", "gt", "lt"]
+                },
+                "left": { "type": "number" },
+                "right": { "type": "number" }
+            }
+        }
+    }
+}
