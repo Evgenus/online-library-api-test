@@ -58,15 +58,21 @@ class LoanForm(FlaskForm):
             self.book_id.errors.append('No such book')
             return False
 
+        return True
+
 
 class LoaningsListForm(FlaskForm):
     start = DateTimeField("Period Start", validators=[
         DataRequired(message='Period Start is required')
-    ])
+        ],
+        format='%Y-%m-%d %H:%M:%S.%f'
+    )
 
     end = DateTimeField("Period End", validators=[
         DataRequired(message='Period End is required')
-    ])
+        ],
+        format='%Y-%m-%d %H:%M:%S.%f'
+    )
 
     def validate(self):
         if not super(LoaningsListForm, self).validate():
@@ -81,3 +87,9 @@ class LoaningsListForm(FlaskForm):
             return False
 
         return True
+
+    def get_start(self):
+        return self.start.data
+
+    def get_end(self):
+        return self.end.data

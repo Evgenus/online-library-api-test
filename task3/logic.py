@@ -5,8 +5,12 @@ from .model import Loaning
 from .db import db
 
 
-def current_time():
+def _time_source():
     return datetime.utcnow()
+
+
+def current_time():
+    return _time_source()
 
 
 def find_user_by_id(user_id):
@@ -59,16 +63,31 @@ def loan_book(user, book):
     )
     loaning.user = user
     loaning.book = book
-    db.session.add(loan_book)
+    db.session.add(loaning)
+    db.session.commit()
+
+
+def make_loanings_list_response(loanings):
+    return [
+        {
+            "id": book_id,
+            "title": book_title,
+            "time": timestamp
+        }
+        for timestamp, book_id, book_title in loanings
+    ]
 
 
 def get_user_loaned_books(user, start, end):
-    return (
-        db.session.query(Loaning)
+    query = (
+        db.session.query(db.func.max(Loaning.timestamp), Book.id, Book.title)
+        .join(Book, Loaning.book_id == Book.id)
         .filter(
             Loaning.user_id == user.id,
             Loaning.timestamp.between(start, end)
         )
-        .joinedload(Book)
+        .group_by(Loaning.book_id)
         .order_by(Loaning.timestamp.desc())
-    ).all()
+    )
+
+    return query.all()

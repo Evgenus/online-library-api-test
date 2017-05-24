@@ -9,9 +9,10 @@ from .forms import LoginForm
 from .forms import LoanForm
 from .forms import LoaningsListForm
 from .logic import get_books_list
-from .logic import make_books_list_response
-from .logic import loan_book
 from .logic import get_user_loaned_books
+from .logic import loan_book
+from .logic import make_books_list_response
+from .logic import make_loanings_list_response
 
 
 api_bp = Blueprint('api', __name__)
@@ -24,7 +25,7 @@ def login():
         user = form.get_user()
         login_user(user)
         return jsonify(success=True)
-    return jsonify(errors=form.errors)
+    return jsonify(errors=form.errors), 400
 
 
 @api_bp.route("/logout", methods=['GET'])
@@ -45,18 +46,18 @@ def all_books_list():
 
 @api_bp.route("/loan", methods=['POST'])
 @login_required
-def perform_loan_book():
+def perform_book_loan():
     form = LoanForm()
     if form.validate():
         book = form.get_book()
         loan_book(current_user, book)
         return jsonify(success=True)
-    return jsonify(errors=form.errors)
+    return jsonify(errors=form.errors), 400
 
 
 @api_bp.route("/loanings", methods=['POST'])
 @login_required
-def get_loaned_books():
+def get_loaned_books_list():
     form = LoaningsListForm()
     if form.validate():
         start = form.get_start()
@@ -64,6 +65,6 @@ def get_loaned_books():
         loanings_list = get_user_loaned_books(current_user, start, end)
         return jsonify(
             success=True,
-            loanings=loanings_list
+            loanings=make_loanings_list_response(loanings_list)
         )
-    return jsonify(errors=form.errors)
+    return jsonify(errors=form.errors), 400

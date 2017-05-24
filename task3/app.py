@@ -4,8 +4,6 @@ from flask_login import LoginManager
 from importlib import import_module
 
 from .db import init_db
-from .db import db
-from .model import User
 from .api import api_bp
 from .logic import find_user_by_id
 
