@@ -15,6 +15,8 @@ from .logic import loan_book
 
 class TestConfig:
     WTF_CSRF_ENABLED = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 
 class APITestCase(unittest.TestCase):
