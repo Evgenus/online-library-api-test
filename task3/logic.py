@@ -1,5 +1,12 @@
+from datetime import datetime
 from .model import User
+from .model import Book
+from .model import Loaning
 from .db import db
+
+
+def current_time():
+    return datetime.utcnow()
 
 
 def find_user_by_id(user_id):
@@ -18,3 +25,50 @@ def find_user_by_username(username):
             User.username == username
         )
     ).first()
+
+
+def get_books_list():
+    return (
+        db.session.query(Book)
+    ).all()
+
+
+def make_books_list_response(books):
+    return [
+        {
+            "id": book.id,
+            "title": book.title
+        }
+        for book in books
+    ]
+
+
+def find_book_by_id(book_id):
+    return (
+        db.session.query(Book)
+        .filter(
+            Book.id == book_id
+        )
+        .order_by(Book.id.asc())
+    ).first()
+
+
+def loan_book(user, book):
+    loaning = Loaning(
+        timestamp=current_time()
+    )
+    loaning.user = user
+    loaning.book = book
+    db.session.add(loan_book)
+
+
+def get_user_loaned_books(user, start, end):
+    return (
+        db.session.query(Loaning)
+        .filter(
+            Loaning.user_id == user.id,
+            Loaning.timestamp.between(start, end)
+        )
+        .joinedload(Book)
+        .order_by(Loaning.timestamp.desc())
+    ).all()
