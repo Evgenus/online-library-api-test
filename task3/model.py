@@ -5,11 +5,17 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    login = db.Column(db.String(64), index=True, unique=True)
+    username = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(130))
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+
+    is_authenticated = True
+
+    def get_id(self):
+        return self.id
 
     def __repr__(self):
-        return '<User %r>' % (self.login)
+        return '<User %r>' % (self.username)
 
 
 class Book(db.Model):
@@ -38,4 +44,4 @@ class Loaning(db.Model):
     book_id = db.Column(
         db.Integer, db.ForeignKey('books.id'), nullable=False
     )
-    book = db.relationship('book', foreign_keys=[book_id])
+    book = db.relationship('Book', foreign_keys=[book_id])
